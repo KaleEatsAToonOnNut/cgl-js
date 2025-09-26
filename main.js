@@ -39,6 +39,29 @@ class Drawables {
 	
 };
 
+class Cell {
+	constructor(x, y, width, height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
+};
+
+var cellList = [];
+
+const extractDrawData = (cells) => {
+	let output = [];
+	for(let i = 0; i < cells.length; i++) {
+		output.push(["fillRect", [cells[i].x, cells[i].y, cells[i].width, cells[i].height]]);
+	}
+	return output;
+}
+
+const align = (toAlign, rounder, offset) => {
+	return (Math.floor(toAlign / rounder) * rounder) + offset;
+}
+
 const clear = () => {
 	ctx.clearRect(0, 0, view.width, view.height);
 }
@@ -55,15 +78,37 @@ const draw = (funcs) => {
 	ctx.stroke();
 }
 
+const getCells = (callback) => {
+	for(let i = 0; i < cellList.length; i++) {
+		callback(cellList[i]);
+	}
+}
+
+document.body.addEventListener("click", (e) => {
+	let exists = false;
+	let newX = align(e.pageX - offsetX, 50, offsetX);
+	let newY = align(e.pageY - offsetY, 50, offsetY);
+	getCells((i) => {
+		if(newX == i.x && newY == i.y) {
+			exists = true;
+		}
+	});
+	if(!exists) {
+		cellList.push(new Cell(newX, newY, 50, 50));
+	}
+});
+
 const mainRender = () => {
 	offsetX = (offsetX + 1) % 50;
 	offsetY = (offsetY + 1) % 50;
-	rectox = (rectox + 1) % 850;
-	rectoy = (rectoy + 1) % 650;
+	getCells((i) => {
+		i.x = (i.x + 1) % 850;
+		i.y = (i.y + 1) % 650;
+	});
 	clear();
 	draw([
 		["grid",[50, 50, offsetX, offsetY]],
-		["fillRect",[rectox, rectoy, 50, 50]]
+		...extractDrawData(cellList)
 	]);
 }
 
