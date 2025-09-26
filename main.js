@@ -2,6 +2,8 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const pi = 3.14159;
 
+const GRID_SIZE = 20;
+
 var view = {
 	x: 0,
 	y: 0,
@@ -101,15 +103,15 @@ document.body.addEventListener("mousemove", (e) => {
 
 document.body.addEventListener("keydown", (e) => {
 	let exists = false;
-	let newX = align((view.x - (mouse.x - offsetX)), 50, offsetX) + 50;
-	let newY = align((view.y - (mouse.y - offsetY)), 50, offsetY) + 50;
+	let newX = align((view.x - (mouse.x - offsetX)), GRID_SIZE, offsetX) + GRID_SIZE;
+	let newY = align((view.y - (mouse.y - offsetY)), GRID_SIZE, offsetY) + GRID_SIZE;
 	getCells((i) => {
 		if(newX == i.x && newY == i.y) {
 			exists = true;
 		}
 	});
 	if(!exists) {
-		cellList.push(new Cell(newX, newY, 50, 50));
+		cellList.push(new Cell(newX, newY, GRID_SIZE, GRID_SIZE));
 	}
 });
 
@@ -124,7 +126,7 @@ document.body.addEventListener("mouseup", () => {
 const mainRender = () => {
 	clear();
 	draw([
-		["grid",[50, 50, view.x % 50, view.y % 50]],
+		["grid",[GRID_SIZE, GRID_SIZE, view.x % GRID_SIZE, view.y % GRID_SIZE]],
 		...extractDrawData(cellList)
 	]);
 }
