@@ -5,9 +5,14 @@ const pi = 3.14159;
 var view = {
 	x: 0,
 	y: 0,
-	width: 840,
-	height: 640
+	width: 1050,
+	height: 850
 };
+
+var mouse = {
+	x: 0,
+	y: 0
+}
 
 var offsetX = 0;
 var offsetY = 0;
@@ -84,10 +89,15 @@ const getCells = (callback) => {
 	}
 }
 
-document.body.addEventListener("click", (e) => {
+document.body.addEventListener("mousemove", (e) => {
+	mouse.x = e.pageX;
+	mouse.y = e.pageY;
+});
+
+document.body.addEventListener("keydown", (e) => {
 	let exists = false;
-	let newX = align(e.pageX - offsetX, 50, offsetX);
-	let newY = align(e.pageY - offsetY, 50, offsetY);
+	let newX = align(mouse.x - offsetX, 50, offsetX);
+	let newY = align(mouse.y - offsetY, 50, offsetY);
 	getCells((i) => {
 		if(newX == i.x && newY == i.y) {
 			exists = true;
@@ -99,11 +109,12 @@ document.body.addEventListener("click", (e) => {
 });
 
 const mainRender = () => {
-	offsetX = (offsetX + 1) % 50;
-	offsetY = (offsetY + 1) % 50;
+	let speed = Math.random() * 1000;
+	offsetX = (offsetX + speed) % 50;
+	offsetY = (offsetY + speed) % 50;
 	getCells((i) => {
-		i.x = (i.x + 1) % 850;
-		i.y = (i.y + 1) % 650;
+		i.x = (i.x + speed) % 1050;
+		i.y = (i.y + speed) % 850;
 	});
 	clear();
 	draw([
@@ -112,4 +123,4 @@ const mainRender = () => {
 	]);
 }
 
-setInterval(mainRender, 33);
+setInterval(mainRender, 1);
