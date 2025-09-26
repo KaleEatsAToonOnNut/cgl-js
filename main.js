@@ -1,6 +1,5 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const pi = 3.14159;
 
 const GRID_SIZE = 20;
 
