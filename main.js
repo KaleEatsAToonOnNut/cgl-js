@@ -11,7 +11,8 @@ var view = {
 
 var mouse = {
 	x: 0,
-	y: 0
+	y: 0,
+	clicked: false
 }
 
 var offsetX = 0;
@@ -58,7 +59,7 @@ var cellList = [];
 const extractDrawData = (cells) => {
 	let output = [];
 	for(let i = 0; i < cells.length; i++) {
-		output.push(["fillRect", [cells[i].x, cells[i].y, cells[i].width, cells[i].height]]);
+		output.push(["fillRect", [view.x - cells[i].x, view.y - cells[i].y, cells[i].width, cells[i].height]]);
 	}
 	return output;
 }
@@ -92,12 +93,16 @@ const getCells = (callback) => {
 document.body.addEventListener("mousemove", (e) => {
 	mouse.x = e.pageX;
 	mouse.y = e.pageY;
+	if(mouse.clicked) {
+		view.x += e.movementX;
+		view.y += e.movementY;
+	}
 });
 
 document.body.addEventListener("keydown", (e) => {
 	let exists = false;
-	let newX = align(mouse.x - offsetX, 50, offsetX);
-	let newY = align(mouse.y - offsetY, 50, offsetY);
+	let newX = align((view.x - (mouse.x - offsetX)), 50, offsetX) + 50;
+	let newY = align((view.y - (mouse.y - offsetY)), 50, offsetY) + 50;
 	getCells((i) => {
 		if(newX == i.x && newY == i.y) {
 			exists = true;
@@ -108,17 +113,18 @@ document.body.addEventListener("keydown", (e) => {
 	}
 });
 
+document.body.addEventListener("mousedown", () => {
+	mouse.clicked = true;
+});
+
+document.body.addEventListener("mouseup", () => {
+	mouse.clicked = false;
+});
+	
 const mainRender = () => {
-	let speed = Math.random() * 1000;
-	offsetX = (offsetX + speed) % 50;
-	offsetY = (offsetY + speed) % 50;
-	getCells((i) => {
-		i.x = (i.x + speed) % 1050;
-		i.y = (i.y + speed) % 850;
-	});
 	clear();
 	draw([
-		["grid",[50, 50, offsetX, offsetY]],
+		["grid",[50, 50, view.x % 50, view.y % 50]],
 		...extractDrawData(cellList)
 	]);
 }
